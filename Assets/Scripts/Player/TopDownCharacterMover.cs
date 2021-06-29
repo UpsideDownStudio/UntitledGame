@@ -38,6 +38,7 @@ public class TopDownCharacterMover : MonoBehaviour
             RotateTowardMouseVector();
     }
 
+    //Поворот тела игрока за курсором мыши.
 	private void RotateTowardMouseVector()
 	{
         Ray ray = camera.ScreenPointToRay(_inputHandler.MousePosition);
@@ -55,6 +56,7 @@ public class TopDownCharacterMover : MonoBehaviour
         }
 	}
 
+    //Поворт тела игрока, когда не включена опция следования за мышью.
 	private void RotateTowardMovementVector(Vector3 movementVector)
 	{
         if(movementVector.magnitude == 0) { return; }
@@ -62,6 +64,7 @@ public class TopDownCharacterMover : MonoBehaviour
         transform.rotation = Quaternion.RotateTowards(transform.rotation, rotation, rotateSpeed);
 	}
 
+	//Передвижение игрока.
     private Vector3 MoveTowardTarget(Vector3 targetVector)
 	{
         var speed = moveSpeed * Time.deltaTime;
