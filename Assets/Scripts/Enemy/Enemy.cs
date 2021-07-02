@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -22,7 +22,7 @@ public class Enemy : MonoBehaviour, IDamage
 	private void Awake()
 	{
 		_navMeshAgent = GetComponent<NavMeshAgent>();
-		//_navMeshAgent.enabled = false;
+		_navMeshAgent.enabled = false;
 		_animator = GetComponent<Animator>();
 	}
 
@@ -34,9 +34,8 @@ public class Enemy : MonoBehaviour, IDamage
 
     void Update()
     {
-		DealDamage(damage, _character.GetComponent<CharacterWeapon>());
+		DealDamage(damage, _character.GetComponent<CharacterCombat>());
 		FollowTarget(_character);
-		
     }
 
     private void FollowTarget(GameObject target)
@@ -49,7 +48,8 @@ public class Enemy : MonoBehaviour, IDamage
     {
 	    if (_healthPoint <= 0 || _healthPoint - damage <= 0)
 	    {
-		    OnEnemyDied?.Invoke(_pointsByKill);
+		    OnEnemyDied?.Invoke(_pointsByKill); 
+		    //Проигрывание анимации смерти.
 			Destroy(gameObject);
 	    }
 	    else
@@ -70,19 +70,15 @@ public class Enemy : MonoBehaviour, IDamage
     {
 	    if (_attackReload <= 0)
 	    {
-		    if (Vector3.Distance(transform.position, _character.transform.position) < attackRange)
+		    if (IsDistanceForAttack(transform, _character.transform))
 		    {
-				_animator.SetTrigger("Attack");
-				//��� ���� ����� �������� ����� ��� ������ �������� �������� ����� �� 1:13:28
-				_navMeshAgent.enabled = false;
-			    target.GetDamage(damage);
+			    _animator.SetTrigger("Attack");
+			    _navMeshAgent.enabled = false;
 			    _attackReload = attackSpeed;
-			
-		    }
+			}
 		}
 	    else
-	    {	
-
+	    {
 		    _attackReload -= Time.deltaTime;
 	    }
     }
@@ -91,12 +87,21 @@ public class Enemy : MonoBehaviour, IDamage
     {
 	    _navMeshAgent.enabled = true;
 	}
-	
 
-	//TODO: Animation callback - ��������� ��, ����� ��������� �������� ��� �����.
-    public void AttackPlayer()
+    private bool IsDistanceForAttack(Transform enemy, Transform target)
     {
-		Debug.Log("Hit"); 
+	    if (Vector3.Distance(enemy.position, target.position) < attackRange)
+		    return true;
+	    else
+		    return false;
+    }
+	
+	//Animation Callback - для вызова метода по определенному времени анимации.
+    public void AttackHit()
+    {
+		if(IsDistanceForAttack(transform, _character.transform))
+			_character.GetComponent<CharacterCombat>().GetDamage(damage);
+		Debug.Log("Hit");
     }
 
     public void AttackComplete()

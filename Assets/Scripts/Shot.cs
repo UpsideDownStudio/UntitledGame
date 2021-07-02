@@ -14,13 +14,13 @@ public class Shot : MonoBehaviour
 	public void Launch(Vector3 direction)
 	{
 		transform.forward = direction;
-		GetComponent<Rigidbody>().AddForce(direction * _speed);
+		GetComponent<Rigidbody>().AddForce(direction.normalized * _speed);
 	}
 
 	private void OnCollisionEnter(Collision other)
 	{
 		var target = other.collider.GetComponent<IDamage>();
-		if (target != null)
+		if (target != null && !other.collider.CompareTag("Player"))
 		{
 			target.GetDamage(_damage);
 		}
