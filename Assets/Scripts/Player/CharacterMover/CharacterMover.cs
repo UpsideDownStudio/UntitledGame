@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Assets.Scripts.Player;
@@ -8,6 +9,7 @@ public class CharacterMover : MonoBehaviour
     private InputHandler _inputHandler;
     private CharacterMoverAnimation _characterMoverAnimation;
 
+    //TODO: Брать характеристики из класса CharacterStats
     [SerializeField]
     private float moveSpeed;
     [SerializeField] 
@@ -44,9 +46,8 @@ public class CharacterMover : MonoBehaviour
 	private void RotateTowardMouseVector()
 	{
         Ray ray = camera.ScreenPointToRay(_inputHandler.MousePosition);
-
         if (Physics.Raycast(ray, out RaycastHit hitInfo, maxDistance: 300f))
-		{
+        {
             Quaternion targetRotation = Quaternion.LookRotation(hitInfo.point - transform.position);
             targetRotation.x = 0;
             targetRotation.z = 0;
@@ -58,7 +59,7 @@ public class CharacterMover : MonoBehaviour
         }
 	}
 
-    //Поворт тела игрока, когда не включена опция следования за мышью.
+	//Поворт тела игрока, когда не включена опция следования за мышью.
 	private void RotateTowardMovementVector(Vector3 movementVector)
 	{
         if(movementVector.magnitude == 0) { return; }
@@ -72,7 +73,6 @@ public class CharacterMover : MonoBehaviour
 	    var speed = 0.0f;
 	    if (Input.GetKey(KeyCode.LeftShift))
 	    {
-            Debug.Log("Run");
 		    speed = runMoveSpeed * Time.deltaTime;
         }
         else

@@ -5,9 +5,8 @@ using UnityEngine;
 public class CharacterWeapon : MonoBehaviour, IDamage
 {
 	private CharacterStats _characterStats;
-
-	[SerializeField]
-	private Shot _shotPrefab;
+	[SerializeField] private Shot _shotPrefab;
+	[SerializeField] private Transform _firePoint;
 	private float _nextFireTime;
 
 	void Start()
@@ -18,15 +17,23 @@ public class CharacterWeapon : MonoBehaviour, IDamage
     
     void Update()
     {
-        if(ReadyToFire())
+		//В зависимости от реализации оружия
+		//Полуавтоматическое GetKeyDown
+		//Автоматическое GetKey
+        if(Input.GetKeyDown(KeyCode.Mouse0) && ReadyToFire())
 			Fire();
     }
 
     private void Fire()
     {
-	    _nextFireTime = Time.time + _characterStats.AttackSpeed;
-	    Shot shot = Instantiate(_shotPrefab, transform.position + Vector3.up, transform.rotation);
-	    shot.Launch(transform.forward);
+	    Ray mouseRay = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+	    if (Physics.Raycast(mouseRay, out RaycastHit hit))
+		{
+			Shot shot = Instantiate(_shotPrefab, _firePoint.position, transform.rotation);
+		    shot.Launch(hit.point - _firePoint.position);
+		    _nextFireTime = Time.time + _characterStats.AttackSpeed;
+		}
     }
 
     private bool ReadyToFire() => Time.time >= _nextFireTime;
