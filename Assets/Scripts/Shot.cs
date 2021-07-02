@@ -13,9 +13,8 @@ public class Shot : MonoBehaviour
 
 	public void Launch(Vector3 direction)
 	{
-		direction.Normalize();
-		transform.up = direction;
-		GetComponent<Rigidbody>().velocity = direction * _speed;
+		transform.forward = direction;
+		GetComponent<Rigidbody>().AddForce(direction * _speed);
 	}
 
 	private void OnCollisionEnter(Collision other)
@@ -31,6 +30,6 @@ public class Shot : MonoBehaviour
 
 	void Start()
 	{
-		Destroy(gameObject, 5f);
+		Destroy(gameObject, 10f);
 	}
 }
