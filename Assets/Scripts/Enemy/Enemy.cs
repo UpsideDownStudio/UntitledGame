@@ -7,7 +7,8 @@ using UnityEngine.AI;
 public class Enemy : MonoBehaviour, IDamage
 {
 	public static event Action<int> OnEnemyDied;
-
+	Animator _animator;
+	
 	[SerializeField] private GameObject _character;
 	[SerializeField] private float _healthPoint = 100f;
 	[SerializeField] private int _pointsByKill = 5;
@@ -21,7 +22,8 @@ public class Enemy : MonoBehaviour, IDamage
 	private void Awake()
 	{
 		_navMeshAgent = GetComponent<NavMeshAgent>();
-		_navMeshAgent.enabled = false;
+		//_navMeshAgent.enabled = false;
+		_animator = GetComponent<Animator>();
 	}
 
 	void Start()
@@ -34,6 +36,7 @@ public class Enemy : MonoBehaviour, IDamage
     {
 		DealDamage(damage, _character.GetComponent<CharacterWeapon>());
 		FollowTarget(_character);
+		
     }
 
     private void FollowTarget(GameObject target)
@@ -61,22 +64,25 @@ public class Enemy : MonoBehaviour, IDamage
 		Gizmos.DrawSphere(transform.position, attackRange);
     }
 
-    //TODO: "Возможно": Переделать под OnTriggerEnter(посоветоваться с тимой). Из-за того, что мы можем получать резист к урону. 
-    //(Ответ на OnTriggerEnter) Но в классе игрока в методе GetDamage мы можем проверять на булеву переменную, мол можем дамаг получить или нет.
+    //TODO: "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ": пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ OnTriggerEnter(пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅ). пїЅпїЅ-пїЅпїЅ пїЅпїЅпїЅпїЅ, пїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅ. 
+    //(пїЅпїЅпїЅпїЅпїЅ пїЅпїЅ OnTriggerEnter) пїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ GetDamage пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅ.
     public void DealDamage(float damage, IDamage target)
     {
 	    if (_attackReload <= 0)
 	    {
 		    if (Vector3.Distance(transform.position, _character.transform.position) < attackRange)
 		    {
-
-				//Для того чтобы наносить дамаг как пройдёт анимация смотреть видос на 1:13:28
+				_animator.SetTrigger("Attack");
+				//пїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅ 1:13:28
+				_navMeshAgent.enabled = false;
 			    target.GetDamage(damage);
 			    _attackReload = attackSpeed;
+			
 		    }
 		}
 	    else
-	    {
+	    {	
+
 		    _attackReload -= Time.deltaTime;
 	    }
     }
@@ -87,14 +93,14 @@ public class Enemy : MonoBehaviour, IDamage
 	}
 	
 
-	//TODO: Animation callback - настроить их, когда прикрутят анимации для врага.
+	//TODO: Animation callback - пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ, пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ.
     public void AttackPlayer()
     {
-
+		Debug.Log("Hit"); 
     }
 
     public void AttackComplete()
     {
-
+		_navMeshAgent.enabled = true;
     }
 }
