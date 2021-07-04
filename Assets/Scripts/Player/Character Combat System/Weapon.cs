@@ -3,11 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-//Класс описывающий любое оружие. 
-//Содержит в себе методы стрельбы, перезарядки и т.п.
+//пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ. 
+//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅ.пїЅ.
 
 
-//TODO: Обернуть характеристики в ScriptableObject
+//TODO: пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ ScriptableObject
 public class Weapon : MonoBehaviour
 {
 	public string Name;
@@ -41,6 +41,7 @@ public class Weapon : MonoBehaviour
 
 	private void RangeAttack(RaycastHit hit)
 	{
+		_firePoint = GameObject.FindGameObjectWithTag("Player").transform.GetChild(2);
 		Shot shot = Instantiate(_shotPrefab, _firePoint.position, transform.rotation);
 		shot.Launch(hit.point - _firePoint.position);
 	}
