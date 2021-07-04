@@ -50,7 +50,8 @@ public class Enemy : MonoBehaviour, IDamage
 	    {
 		    OnEnemyDied?.Invoke(_pointsByKill); 
 		    //Проигрывание анимации смерти.
-			Destroy(gameObject);
+			Die();
+			Destroy(gameObject, 5f);
 	    }
 	    else
 	    {
@@ -58,6 +59,12 @@ public class Enemy : MonoBehaviour, IDamage
 	    }
     }
 
+	private void Die()
+	{
+		GetComponent<Collider>().enabled = false;
+		_navMeshAgent.enabled = false;
+		_animator.SetTrigger("Died");
+	}
     private void OnDrawGizmos()
     {
 	    Gizmos.color = new Color(255, 0, 0 ,0.25f);
