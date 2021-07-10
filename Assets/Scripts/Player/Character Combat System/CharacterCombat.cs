@@ -11,6 +11,7 @@ public class CharacterCombat : MonoBehaviour, IDamage
 	[SerializeField] private Shot _shotPrefab;
 	[SerializeField] private Transform _firePoint;
 	[SerializeField] private Weapon _currentWeapon;
+	Animator _animator;
 	private float _nextFireTime;
 
 	private void Awake()
@@ -18,6 +19,7 @@ public class CharacterCombat : MonoBehaviour, IDamage
 		_characterStats = GetComponent<CharacterStats>();
 		_characterWeapon = GetComponent<CharacterWeapon>();
 		_characterWeapon.OnWeaponChangeEvent += ChangeWeapon;
+		_animator = GetComponent<Animator>();
 	}
 
 	private void ChangeWeapon(Weapon weapon)
@@ -32,10 +34,10 @@ public class CharacterCombat : MonoBehaviour, IDamage
 
 	void Update()
     {
-		//В зависимости от реализации оружия
-		//Полуавтоматическое GetKeyDown
-		//Автоматическое GetKey
-		//Реализовать метод стрельбы в классе Weapon.
+		//пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+		//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ GetKeyDown
+		//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ GetKey
+		//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ Weapon.
 		if (Input.GetKeyDown(KeyCode.Mouse0) && ReadyToDealDamage())
 		{
 			Debug.Log("Player Fire");
@@ -43,13 +45,14 @@ public class CharacterCombat : MonoBehaviour, IDamage
 		}
     }
 
-	//Подумать как применять модификаторы атаки и т.п.
+	//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅ пїЅ.пїЅ.
     private void Fire()
     {
 	    Ray mouseRay = Camera.main.ScreenPointToRay(Input.mousePosition);
 
 	    if (Physics.Raycast(mouseRay, out RaycastHit hit))
 	    {
+			_animator.SetTrigger("Shoot");
 		    _currentWeapon.Attack(hit);
 		    _nextFireTime = Time.time + _currentWeapon.attackSpeed * _characterStats.AttackSpeed;
 		}
