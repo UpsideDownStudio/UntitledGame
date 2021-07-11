@@ -7,7 +7,7 @@ using UnityEngine;
 //Перечисление для характеристик персонажа
 public enum CharacterStatsType
 {
-	HelthPoint,
+	HealthPoint,
 	AttackRange,
 	AttackSpeed,
 	Damage,
@@ -35,28 +35,30 @@ public class CharacterStats : MonoBehaviour
 			_attackReload -= Time.deltaTime;
 	}
 
-	public void ModifyValue(CharacterStatsType statType, float value)
+	public void ModifyValue(ItemSO item)
 	{
+		var statType = item.CharacterStatsType;
+
 		switch (statType)
 		{
-			case CharacterStatsType.HelthPoint:
-				HealthPoint += value;
-				Debug.Log("Поднял здоровье = " + HealthPoint);
+			case CharacterStatsType.HealthPoint:
+				HealthPoint += item.CharacterStatsModifieValue;
+				Debug.Log("Поднял здоровье = " + HealthPoint + "\nОписание: " + item.Description);
 				break;
 			case CharacterStatsType.Damage:
-				Damage += value;
+				Damage += item.CharacterStatsModifieValue;
 				Debug.Log("Поднял урон = " + Damage);
 				break;
 			case CharacterStatsType.AttackSpeed:
-				AttackSpeed += value;
+				AttackSpeed += item.CharacterStatsModifieValue;
 				Debug.Log("Поднял скорость атаки = " + AttackSpeed);
 				break;
 			case CharacterStatsType.AttackRange:
-				AttackRange += value;
+				AttackRange += item.CharacterStatsModifieValue;
 				Debug.Log("Поднял дальность атаки = " + AttackRange);
 				break;
 			case CharacterStatsType.Speed:
-				Speed += value;
+				Speed += item.CharacterStatsModifieValue;
 				Debug.Log("Поднял скорость передвижения = " + Speed);
 				break;
 		}

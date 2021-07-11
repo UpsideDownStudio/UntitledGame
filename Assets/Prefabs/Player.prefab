@@ -1341,6 +1341,7 @@ GameObject:
   - component: {fileID: 8964867428270617566}
   - component: {fileID: 8964867428270617560}
   - component: {fileID: 84914733712179160}
+  - component: {fileID: 5404790476275439833}
   - component: {fileID: 8964867428270617536}
   - component: {fileID: 8964867428270617539}
   - component: {fileID: 8964867428270617538}
@@ -1450,6 +1451,19 @@ MonoBehaviour:
   - {fileID: 1073030848217483817, guid: 3ffc68788bf81d447b5e57fdc50dd830, type: 3}
   - {fileID: 3528631436140035725, guid: 49f8a1b6bb2263e47adc219905dc84e1, type: 3}
   currentWeapon: {fileID: 0}
+--- !u!114 &5404790476275439833
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8118005218005965153}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0602b50cd89971144903c5a956e68779, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _itemSoList: []
 --- !u!114 &8964867428270617536
 MonoBehaviour:
   m_ObjectHideFlags: 0
