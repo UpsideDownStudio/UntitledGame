@@ -11,7 +11,18 @@ public class ItemSO : ScriptableObject
 	[SerializeField] private string _description;
 	[SerializeField] private Sprite _icon;
 	[SerializeField] private TypeOfItems _typeOfItem;
-	
+	[SerializeField] private bool _isStackable;
+	[SerializeField] private int _maxStackableValue;
+
+	public bool IsStackable
+	{
+		get => _isStackable;
+	}
+	public int MaxStackableValue
+	{
+		get => _maxStackableValue;
+	}
+
 	public string Name
 	{
 		get => _name;

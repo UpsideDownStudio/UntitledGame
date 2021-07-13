@@ -72,8 +72,6 @@ public class Enemy : MonoBehaviour, IDamage
 		Gizmos.DrawSphere(transform.position, attackRange);
     }
 
-    //TODO: "��������": ���������� ��� OnTriggerEnter(�������������� � �����). ��-�� ����, ��� �� ����� �������� ������ � �����. 
-    //(����� �� OnTriggerEnter) �� � ������ ������ � ������ GetDamage �� ����� ��������� �� ������ ����������, ��� ����� ����� �������� ��� ���.
     public void DealDamage(float damage, IDamage target)
     {
 	    if (_attackReload <= 0)

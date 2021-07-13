@@ -9,7 +9,7 @@ public class CharacterInventory : MonoBehaviour
 	public event Action<ItemSO, int> UpdateInventoryUIByItem;
 
 	[SerializeField] private int _maxInventorySize;
-	[SerializeField] private List<ItemSO> _itemSoList;
+	[SerializeField] private List<ItemRecord> _itemSoList;
 	[SerializeField] private int _currentInventorySize;
 	[SerializeField] private CharacterInventoryUI _characterInventoryUi;
 
@@ -36,9 +36,21 @@ public class CharacterInventory : MonoBehaviour
 
 	public bool TryToPickUpItem(ItemSO newItem)
 	{
+		var index = _itemSoList.FindIndex(x => x.GetItem() == newItem);
+
+		if (index != -1)
+		{
+			if (_itemSoList[index].currentStackValue < newItem.MaxStackableValue)
+			{
+				_itemSoList[index].currentStackValue++;
+				Debug.Log("Был добавлен предмет + " + newItem.Name + " " + _itemSoList[index].currentStackValue);
+				return true;
+			}
+		}
+		
 		if (_currentInventorySize != _maxInventorySize)
 		{
-			_itemSoList.Add(newItem);
+			_itemSoList.Add(new ItemRecord(newItem));
 			_currentInventorySize++;
 			UpdateInventoryUIByItem?.Invoke(newItem, _currentInventorySize - 1);
 
@@ -50,6 +62,6 @@ public class CharacterInventory : MonoBehaviour
 
 	private void UseItem(int index)
 	{
-		_characterStats.ModifyValue(_itemSoList[index]);
+		_characterStats.ModifyValue(_itemSoList[index].GetItem());
 	}
 }
