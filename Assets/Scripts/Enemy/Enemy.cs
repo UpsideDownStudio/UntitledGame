@@ -63,6 +63,7 @@ public class Enemy : MonoBehaviour, IDamage
 	{
 		GetComponent<Collider>().enabled = false;
 		_navMeshAgent.enabled = false;
+		GetComponent<CapsuleCollider>().enabled = false;
 		_animator.SetTrigger("Died");
 	}
     private void OnDrawGizmos()

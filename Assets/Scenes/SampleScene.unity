@@ -482,7 +482,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh17386
+  m_Name: pb_Mesh17466
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -903,7 +903,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 5
+  orthographic size: 15
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
@@ -3835,7 +3835,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 5404790476275439833, guid: a6b5f1890c3bc22498d19c53450e79e1, type: 3}
       propertyPath: _maxInventorySize
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 5404790476275439833, guid: a6b5f1890c3bc22498d19c53450e79e1, type: 3}
       propertyPath: _characterInventoryUi

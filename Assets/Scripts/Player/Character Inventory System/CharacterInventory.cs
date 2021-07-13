@@ -18,8 +18,20 @@ public class CharacterInventory : MonoBehaviour
 	private void Start()
 	{
 		_currentInventorySize = _itemSoList.Count;
-		ItemUI.OnItemClicked += UseItem;
 		_characterStats = GetComponent<CharacterStats>();
+
+		ItemUI.OnItemClicked += UseItem;
+		ItemUI.OnItemsSwitched += SwitchItems;
+	}
+
+	private void SwitchItems(int firstItemIndex, int secondItemIndex)
+	{
+		if (firstItemIndex != secondItemIndex)
+		{
+			var tmpItem = _itemSoList[firstItemIndex];
+			_itemSoList[firstItemIndex] = _itemSoList[secondItemIndex];
+			_itemSoList[secondItemIndex] = tmpItem;
+		}
 	}
 
 	public bool TryToPickUpItem(ItemSO newItem)

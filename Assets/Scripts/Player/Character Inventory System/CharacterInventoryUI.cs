@@ -20,7 +20,6 @@ public class CharacterInventoryUI : MonoBehaviour
 	{
 		var item = Instantiate(_itemUiPrefab, transform);
 		var itemInfo = item.GetComponent<ItemUI>();
-		itemInfo._itemIndex = index;
-
+		itemInfo.itemIndex = index;
 	}
 }

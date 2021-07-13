@@ -3,17 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-
-//Перечисление для характеристик персонажа
-public enum CharacterStatsType
-{
-	HealthPoint,
-	AttackRange,
-	AttackSpeed,
-	Damage,
-	Speed
-}
-
 public class CharacterStats : MonoBehaviour
 {
 	public float Speed = 5f;
@@ -37,49 +26,53 @@ public class CharacterStats : MonoBehaviour
 
 	public void ModifyValue(ItemSO item)
 	{
-		var statType = item.CharacterStatsType;
+		var statType = item.TypeOfItems;
 
 		switch (statType)
 		{
-			case CharacterStatsType.HealthPoint:
-				HealthPoint += item.CharacterStatsModifieValue;
-				Debug.Log("Поднял здоровье = " + HealthPoint + "\nОписание: " + item.Description);
+			case TypeOfItems.Buffs:
+				UseBuffItem(item as BuffSO);
 				break;
-			case CharacterStatsType.Damage:
-				Damage += item.CharacterStatsModifieValue;
-				Debug.Log("Поднял урон = " + Damage);
-				break;
-			case CharacterStatsType.AttackSpeed:
-				AttackSpeed += item.CharacterStatsModifieValue;
-				Debug.Log("Поднял скорость атаки = " + AttackSpeed);
-				break;
-			case CharacterStatsType.AttackRange:
-				AttackRange += item.CharacterStatsModifieValue;
-				Debug.Log("Поднял дальность атаки = " + AttackRange);
-				break;
-			case CharacterStatsType.Speed:
-				Speed += item.CharacterStatsModifieValue;
-				Debug.Log("Поднял скорость передвижения = " + Speed);
+			case TypeOfItems.Weapon:
+				UseWeaponItem();
 				break;
 		}
 	}
 
-	public void GetDamage(float damage)
+	private void UseWeaponItem()
 	{
-		if (HealthPoint <= 0f)
-		{
-			Debug.Log("Dead");
-			Destroy(gameObject);
-		}
-		else
-		{
-			HealthPoint -= damage;
-		}
+		throw new NotImplementedException();
 	}
 
-	public void DealDamage(float damage, IDamage target)
+	private void UseBuffItem(BuffSO item)
 	{
-		target.GetDamage(damage);
+		if (item != null)
+		{
+			var statType = item.CharacterStatsType;
+			switch (statType)
+			{
+				case CharacterStatsType.HealthPoint:
+					HealthPoint += item.ModifyValue;
+					Debug.Log("Поднял здоровье = " + HealthPoint + "\nОписание: " + item.Description);
+					break;
+				case CharacterStatsType.Damage:
+					Damage += item.ModifyValue;
+					Debug.Log("Поднял урон = " + Damage);
+					break;
+				case CharacterStatsType.AttackSpeed:
+					AttackSpeed += item.ModifyValue;
+					Debug.Log("Поднял скорость атаки = " + AttackSpeed);
+					break;
+				case CharacterStatsType.AttackRange:
+					AttackRange += item.ModifyValue;
+					Debug.Log("Поднял дальность атаки = " + AttackRange);
+					break;
+				case CharacterStatsType.Speed:
+					Speed += item.ModifyValue;
+					Debug.Log("Поднял скорость передвижения = " + Speed);
+					break;
+			}
+		}
 	}
 }
 
