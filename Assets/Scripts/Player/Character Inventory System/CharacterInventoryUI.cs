@@ -12,14 +12,44 @@ public class CharacterInventoryUI : MonoBehaviour
 
 	private void Start()
 	{
-		_characterInventory.UpdateInventoryUIByItem += UpdateUIByItem;
+		//Нужно реворкать. Слишком много событий
+		_characterInventory.UpdateInventoryUIByNewItem += UpdateUIByNewItem;
+		_characterInventory.UpdateInventoryUIByExistItem += UpdateUIByExistItem;
+		_characterInventory.UpdateInventoryUIAll += UpdateUIByListOfItems;
+		_characterInventory.DeleteItemUI += DeleteItemUI;
 		_characterInventory.UpdateInventoryUIAll += sos => { };
 	}
 
-	private void UpdateUIByItem(ItemSO newItem, int index)
+	private void DeleteItemUI(int index)
+	{
+		var itemUI = transform.GetChild(index);
+		Destroy(itemUI.gameObject);
+	}
+
+	private void UpdateUIByListOfItems(List<ItemRecord> itemList)
+	{
+		for (int i = 0; i < transform.childCount; i++)
+		{
+			Destroy(transform.GetChild(i).gameObject);
+		}
+
+		for (int i = 0; i < itemList.Count; i++)
+		{
+			UpdateUIByNewItem(itemList[i],i);
+		}
+	}
+
+	private void UpdateUIByNewItem(ItemRecord itemRecord, int index)
 	{
 		var item = Instantiate(_itemUiPrefab, transform);
 		var itemInfo = item.GetComponent<ItemUI>();
-		itemInfo.itemIndex = index;
+		itemInfo.ConfigureItemUI(itemRecord, index);
+	}
+
+	private void UpdateUIByExistItem(ItemRecord itemRecord, int index)
+	{
+		var item = transform.GetChild(index);
+		var itemInfo = item.GetComponent<ItemUI>();
+		itemInfo.ConfigureItemUI(itemRecord, index);
 	}
 }

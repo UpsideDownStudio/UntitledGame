@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -10,6 +11,7 @@ public class ItemUI : MonoBehaviour, IPointerClickHandler, IDragHandler, IBeginD
 	public static event Action<int, int> OnItemsSwitched;
 	[SerializeField] public int itemIndex;
 	[SerializeField] private GameObject _iconGameObject;
+	[SerializeField] private TMP_Text _tmpText;
 	[SerializeField] private CanvasGroup _canvasGroup;
 		
 	private int _dropIndexItem;
@@ -17,6 +19,12 @@ public class ItemUI : MonoBehaviour, IPointerClickHandler, IDragHandler, IBeginD
 	private void Start()
 	{
 		_canvasGroup = transform.GetComponent<CanvasGroup>();
+	}
+
+	public void ConfigureItemUI(ItemRecord itemRecord, int index)
+	{
+		itemIndex = index;
+		_tmpText.text = itemRecord.currentStackValue.ToString();
 	}
 
 	public void OnPointerClick(PointerEventData eventData)

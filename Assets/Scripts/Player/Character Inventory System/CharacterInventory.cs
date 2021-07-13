@@ -5,8 +5,10 @@ using UnityEngine;
 
 public class CharacterInventory : MonoBehaviour
 {
-	public event Action<List<ItemSO>> UpdateInventoryUIAll;
-	public event Action<ItemSO, int> UpdateInventoryUIByItem;
+	public event Action<List<ItemRecord>> UpdateInventoryUIAll;
+	public event Action<ItemRecord, int> UpdateInventoryUIByNewItem;
+	public event Action<ItemRecord, int> UpdateInventoryUIByExistItem;
+	public event Action<int> DeleteItemUI;
 
 	[SerializeField] private int _maxInventorySize;
 	[SerializeField] private List<ItemRecord> _itemSoList;
@@ -36,7 +38,15 @@ public class CharacterInventory : MonoBehaviour
 
 	public bool TryToPickUpItem(ItemSO newItem)
 	{
-		var index = _itemSoList.FindIndex(x => x.GetItem() == newItem);
+		var index = -1;
+		for (int i = 0; i < _itemSoList.Count; i++)
+		{
+			if (_itemSoList[i].GetItem() == newItem && _itemSoList[i].currentStackValue < newItem.MaxStackableValue)
+			{
+				index = i;
+				break;
+			}
+		}
 
 		if (index != -1)
 		{
@@ -44,15 +54,17 @@ public class CharacterInventory : MonoBehaviour
 			{
 				_itemSoList[index].currentStackValue++;
 				Debug.Log("Был добавлен предмет + " + newItem.Name + " " + _itemSoList[index].currentStackValue);
+				UpdateInventoryUIByExistItem?.Invoke(_itemSoList[index], index);
 				return true;
 			}
 		}
 		
 		if (_currentInventorySize != _maxInventorySize)
 		{
-			_itemSoList.Add(new ItemRecord(newItem));
+			var itemRecord = new ItemRecord(newItem);
+			_itemSoList.Add(itemRecord);
 			_currentInventorySize++;
-			UpdateInventoryUIByItem?.Invoke(newItem, _currentInventorySize - 1);
+			UpdateInventoryUIByNewItem?.Invoke(itemRecord, _currentInventorySize - 1);
 
 			return true;
 		}
@@ -62,6 +74,18 @@ public class CharacterInventory : MonoBehaviour
 
 	private void UseItem(int index)
 	{
+		_itemSoList[index].currentStackValue -= 1;
+
+		if (_itemSoList[index].currentStackValue == 0)
+		{
+			_itemSoList.RemoveAt(index);
+			UpdateInventoryUIAll?.Invoke(_itemSoList);
+		}
+		else
+		{
+			UpdateInventoryUIByExistItem?.Invoke(_itemSoList[index], index);
+		}
+
 		_characterStats.ModifyValue(_itemSoList[index].GetItem());
 	}
 }
