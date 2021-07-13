@@ -17,5 +17,7 @@ MonoBehaviour:
     \u043F\u043E\u0432\u044B\u0448\u0430\u0435\u0442 \u0443\u0440\u043E\u043D"
   _icon: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
   _typeOfItem: 1
+  _isStackable: 0
+  _maxStackableValue: 1
   _characterStatsType: 3
   _modifyValue: 50

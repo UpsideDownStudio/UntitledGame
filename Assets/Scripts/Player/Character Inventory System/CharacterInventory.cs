@@ -33,6 +33,7 @@ public class CharacterInventory : MonoBehaviour
 			var tmpItem = _itemSoList[firstItemIndex];
 			_itemSoList[firstItemIndex] = _itemSoList[secondItemIndex];
 			_itemSoList[secondItemIndex] = tmpItem;
+			UpdateInventoryUIAll?.Invoke(_itemSoList);
 		}
 	}
 
@@ -75,17 +76,17 @@ public class CharacterInventory : MonoBehaviour
 	private void UseItem(int index)
 	{
 		_itemSoList[index].currentStackValue -= 1;
+		_characterStats.ModifyValue(_itemSoList[index].GetItem());
 
 		if (_itemSoList[index].currentStackValue == 0)
 		{
 			_itemSoList.RemoveAt(index);
+			_currentInventorySize--;
 			UpdateInventoryUIAll?.Invoke(_itemSoList);
 		}
 		else
 		{
 			UpdateInventoryUIByExistItem?.Invoke(_itemSoList[index], index);
 		}
-
-		_characterStats.ModifyValue(_itemSoList[index].GetItem());
 	}
 }

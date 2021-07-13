@@ -35,7 +35,7 @@ public class CharacterInventoryUI : MonoBehaviour
 
 		for (int i = 0; i < itemList.Count; i++)
 		{
-			UpdateUIByNewItem(itemList[i],i);
+			UpdateUIByNewItem(itemList[i], i);
 		}
 	}
 
