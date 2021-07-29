@@ -5,5 +5,5 @@ using UnityEngine;
 
 public interface ILootable
 {
-	void PickUp(CharacterInventory player);
+	void PickUp(Inventory inventory);
 }

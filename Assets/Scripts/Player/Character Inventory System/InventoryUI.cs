@@ -1,32 +1,13 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.PlayerLoop;
+using UnityEngine.UI;
 
-public class CharacterInventoryUI : MonoBehaviour
+public class InventoryUI : MonoBehaviour
 {
-	[SerializeField] private CharacterInventory _characterInventory;
 	[SerializeField] private GameObject _itemUiPrefab;
-	
 
-	private void Start()
-	{
-		//Нужно реворкать
-		_characterInventory.UpdateInventoryUIByNewItem += UpdateUIByNewItem;
-		_characterInventory.UpdateInventoryUIByExistItem += UpdateUIByExistItem;
-		_characterInventory.UpdateInventoryUIAll += UpdateUIByListOfItems;
-		_characterInventory.DeleteItemUI += DeleteItemUI;
-		_characterInventory.UpdateInventoryUIAll += sos => { };
-	}
-
-	private void DeleteItemUI(int index)
-	{
-		var itemUI = transform.GetChild(index);
-		Destroy(itemUI.gameObject);
-	}
-
-	private void UpdateUIByListOfItems(List<ItemRecord> itemList)
+	public void UpdateAllUI(List<ItemRecord> itemList)
 	{
 		for (int i = 0; i < transform.childCount; i++)
 		{
@@ -39,9 +20,18 @@ public class CharacterInventoryUI : MonoBehaviour
 		}
 	}
 
+	public void UpdateUIByItem(ItemRecord item, int id, bool isNewItem = false)
+	{
+		if (isNewItem)
+			UpdateUIByNewItem(item, id);
+		else
+			UpdateUIByExistItem(item, id);
+	}
+
 	private void UpdateUIByNewItem(ItemRecord itemRecord, int index)
 	{
 		var item = Instantiate(_itemUiPrefab, transform);
+		Debug.Log(itemRecord.GetItem().Name);
 		var itemInfo = item.GetComponent<ItemUI>();
 		itemInfo.ConfigureItemUI(itemRecord, index);
 	}

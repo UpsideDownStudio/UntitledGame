@@ -18,9 +18,12 @@ public class Enemy : MonoBehaviour, IDamage
 	private float _attackReload;
 
 	private NavMeshAgent _navMeshAgent;
+	private EnemyDrop _enemyDrop;
+
 
 	private void Awake()
 	{
+		_enemyDrop = GetComponent<EnemyDrop>();
 		_navMeshAgent = GetComponent<NavMeshAgent>();
 		_navMeshAgent.enabled = false;
 		_animator = GetComponent<Animator>();
@@ -62,8 +65,9 @@ public class Enemy : MonoBehaviour, IDamage
 	private void Die()
 	{
 		GetComponent<Collider>().enabled = false;
-		_navMeshAgent.enabled = false;
 		GetComponent<CapsuleCollider>().enabled = false;
+		_navMeshAgent.enabled = false;
+		_enemyDrop.DropItem();
 		_animator.SetTrigger("Died");
 	}
     private void OnDrawGizmos()

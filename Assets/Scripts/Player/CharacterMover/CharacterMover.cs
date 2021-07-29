@@ -71,14 +71,18 @@ public class CharacterMover : MonoBehaviour
     private Vector3 MoveTowardTarget(Vector3 targetVector)
     {
 	    var speed = 0.0f;
-	    if (Input.GetKey(KeyCode.LeftShift))
+
+	    targetVector = Quaternion.Euler(0, camera.gameObject.transform.eulerAngles.y, 0) * targetVector;
+	    float velocityZ = Vector3.Dot(targetVector.normalized, transform.forward);
+	    float velocityX = Vector3.Dot(targetVector.normalized, transform.right);
+
+        if (Input.GetKey(KeyCode.LeftShift) && (velocityX > 0 && velocityZ > 0))
 	    {
 		    speed = runMoveSpeed * Time.deltaTime;
         }
         else
 	        speed = moveSpeed * Time.deltaTime;
 
-        targetVector = Quaternion.Euler(0, camera.gameObject.transform.eulerAngles.y, 0) * targetVector;
         var targetPosition = transform.position + targetVector * speed;
         transform.position = targetPosition;
 

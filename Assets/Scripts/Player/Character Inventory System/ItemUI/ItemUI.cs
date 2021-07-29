@@ -29,6 +29,7 @@ public class ItemUI : MonoBehaviour, IPointerClickHandler, IDragHandler, IBeginD
 
 	public void OnPointerClick(PointerEventData eventData)
 	{
+		Debug.Log("USEEEESS");
 		OnItemClicked?.Invoke(itemIndex);
 	}
 
