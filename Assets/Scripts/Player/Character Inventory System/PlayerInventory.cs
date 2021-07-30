@@ -6,34 +6,41 @@ using UnityEngine;
 [RequireComponent(typeof(CharacterStats))]
 public class PlayerInventory : Inventory
 {
+	public const int UsableItemSlot = 4;
 	public event Action<ItemRecord> WeaponItemSwitched;
 
-	[SerializeField] private List<ItemRecord> _weaponItemList;
+	[SerializeField] private List<ItemSO> _weaponItemList;
 	[SerializeField] private List<ItemRecord> _consumableItemList;
 	[SerializeField] private CharacterStats _characterStats;
+
 
 	protected override void Start()
 	{
 		base.Start();
+		ItemUI.OnWeaponSwitched += SwapWeapon;
 
 		_characterStats = GetComponent<CharacterStats>();
-		_inventoryUi = GameObject.FindGameObjectWithTag("PlayerInventory").GetComponent<InventoryUI>();
+		_inventoryUi = GameObject.FindGameObjectWithTag("PlayerInventory").GetComponent<PlayerInventoryUI>();
 	}
 
+	//Можно использовать только те предметы, что под типом Consumables(Buffs)
 	public override void ItemUse(int id)
 	{
-		_itemList[id].currentStackValue -= 1;
-		_characterStats.ModifyValue(_itemList[id].GetItem());
+		if (_itemList[id].GetItem().TypeOfItems == TypeOfItems.Buffs)
+		{
+			_itemList[id].currentStackValue -= 1;
+			_characterStats.ModifyValue(_itemList[id].GetItem());
 
-		if (_itemList[id].currentStackValue == 0)
-		{
-			_itemList.RemoveAt(id);
-			_currentInventorySize--;
-			_inventoryUi.UpdateAllUI(_itemList);
-		}
-		else
-		{
-			_inventoryUi.UpdateUIByItem(_itemList[id], id);
+			if (_itemList[id].currentStackValue == 0)
+			{
+				_itemList.RemoveAt(id);
+				_currentInventorySize--;
+				_inventoryUi.UpdateAllUI(_itemList);
+			}
+			else
+			{
+				_inventoryUi.UpdateUIByItem(_itemList[id], id);
+			}
 		}
 	}
 
@@ -66,7 +73,6 @@ public class PlayerInventory : Inventory
 			_itemList.Add(itemRecord);
 			_currentInventorySize++;
 			_inventoryUi.UpdateUIByItem(itemRecord, _currentInventorySize - 1, true);
-			//UpdateInventoryUIByNewItem?.Invoke(itemRecord, _currentInventorySize - 1);
 
 			return true;
 		}
@@ -74,20 +80,35 @@ public class PlayerInventory : Inventory
 		return false;
 	}
 
-	protected override void ItemSwap(int firstId, int secondId)
+	private void SwapWeapon(int firstId, int secondId, bool firstIsWeaponSlot, bool secondIsWeaponSlot)
 	{
-		base.ItemSwap(firstId, secondId);
+		if (firstIsWeaponSlot && secondIsWeaponSlot)
+		{
+			var tmpWeapon = _weaponItemList[secondId];
+			_weaponItemList[secondId] = _weaponItemList[firstId];
+			_weaponItemList[firstId] = tmpWeapon;
+		}
+		else if (firstIsWeaponSlot && _itemList[secondId].GetItem().TypeOfItems == TypeOfItems.Weapon)
+		{
+			SwapWeapon(firstId, secondId);
+		}
+		else if (secondIsWeaponSlot && _itemList[firstId].GetItem().TypeOfItems == TypeOfItems.Weapon)
+		{
+			SwapWeapon(secondId, firstId);
+		}
 	}
 
 	private void SwapWeapon(int firstId, int secondId)
 	{
-		//TODO смена оружия
-		base.ItemSwap(firstId, secondId);
+		var tmpWeapon = _weaponItemList[firstId];
+		_weaponItemList[firstId] = _itemList[secondId].GetItem();
+		_itemList[secondId] = new ItemRecord(tmpWeapon);
 	}
 
 	private void SwapConsumables(int firstId, int secondId)
 	{
-		//TODO смена используемых предметов
-		base.ItemSwap(firstId, secondId);
+		//смена используемых предметов
+		if (_itemList[firstId].GetItem().TypeOfItems == TypeOfItems.Buffs)
+			base.ItemSwap(firstId, secondId);
 	}
 }

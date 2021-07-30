@@ -7,7 +7,8 @@ public abstract class Inventory : MonoBehaviour
 {
 	[SerializeField] protected int _maxInventorySize;
 	[SerializeField] protected int _currentInventorySize;
-	
+
+	[SerializeField] private GameObject _inventoryUIObject;
 	[SerializeField] protected InventoryUI _inventoryUi;
 	[SerializeField] protected List<ItemRecord> _itemList;
 
@@ -17,7 +18,18 @@ public abstract class Inventory : MonoBehaviour
 		ItemUI.OnItemsSwitched += ItemSwap;
 
 		_currentInventorySize = _itemList.Count;
-	}	
+	}
+
+	private void Update()
+	{
+		UseInventory();
+	}
+
+	private void UseInventory()
+	{
+		if(Input.GetKeyDown(KeyCode.I))
+			_inventoryUIObject.SetActive(!_inventoryUIObject.activeSelf);
+	}
 
 	public virtual void ItemUse(int id)
 	{

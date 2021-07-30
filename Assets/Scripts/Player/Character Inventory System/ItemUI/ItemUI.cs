@@ -5,16 +5,20 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class ItemUI : MonoBehaviour, IPointerClickHandler, IDragHandler, IBeginDragHandler, IEndDragHandler, IPointerEnterHandler, IDropHandler
+public class ItemUI : MonoBehaviour, IPointerClickHandler, IDragHandler, IBeginDragHandler, IEndDragHandler, IDropHandler
 {
 	public static event Action<int> OnItemClicked;
 	public static event Action<int, int> OnItemsSwitched;
+	public static event Action<int, int, bool, bool> OnWeaponSwitched;
+	public static event Action<int, int> OnConsumableSwitched;
+
+	[SerializeField] private bool _isWeaponSlot;
+	[SerializeField] private bool _isConsumableSlot;
+
 	[SerializeField] public int itemIndex;
 	[SerializeField] private GameObject _iconGameObject;
 	[SerializeField] private TMP_Text _tmpText;
 	[SerializeField] private CanvasGroup _canvasGroup;
-		
-	private int _dropIndexItem;
 
 	private void Start()
 	{
@@ -29,13 +33,12 @@ public class ItemUI : MonoBehaviour, IPointerClickHandler, IDragHandler, IBeginD
 
 	public void OnPointerClick(PointerEventData eventData)
 	{
-		Debug.Log("USEEEESS");
-		OnItemClicked?.Invoke(itemIndex);
+		if(!_isWeaponSlot || !_isConsumableSlot)
+			OnItemClicked?.Invoke(itemIndex);
 	}
 
 	public void OnBeginDrag(PointerEventData eventData)
 	{
-		//Debug.Log($"Dragging with {eventData.pointerEnter.name}");
 		_canvasGroup.alpha = .6f;
 		_canvasGroup.blocksRaycasts = false;
 	}
@@ -45,7 +48,6 @@ public class ItemUI : MonoBehaviour, IPointerClickHandler, IDragHandler, IBeginD
 		_iconGameObject.transform.position = eventData.pointerCurrentRaycast.screenPosition;
 	}
 
-
 	public void OnEndDrag(PointerEventData eventData)
 	{
 		_iconGameObject.transform.localPosition = Vector3.zero;
@@ -53,15 +55,17 @@ public class ItemUI : MonoBehaviour, IPointerClickHandler, IDragHandler, IBeginD
 		_canvasGroup.blocksRaycasts = true;
 	}
 
-	public void OnPointerEnter(PointerEventData eventData)
-	{
-		//Debug.Log(itemIndex);
-	}
-
 	public void OnDrop(PointerEventData eventData)
 	{
-		int indexOfItem = eventData.pointerDrag.transform.GetComponent<ItemUI>().itemIndex;
-		OnItemsSwitched?.Invoke(indexOfItem, itemIndex);
-		Debug.Log("Droped " + indexOfItem + "Current " + itemIndex);
+		var item = eventData.pointerDrag.transform.GetComponent<ItemUI>();
+
+		if(item._isWeaponSlot || _isWeaponSlot)
+			OnWeaponSwitched?.Invoke(item.itemIndex, itemIndex, item._isWeaponSlot, _isWeaponSlot);
+		else if(item._isConsumableSlot || _isConsumableSlot)
+			OnConsumableSwitched?.Invoke(item.itemIndex, itemIndex);
+		else
+			OnItemsSwitched?.Invoke(item.itemIndex, itemIndex);
+
+		Debug.Log("Droped " + item.itemIndex + "Current " + itemIndex);
 	}
 }

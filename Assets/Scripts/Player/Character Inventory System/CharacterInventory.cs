@@ -23,7 +23,6 @@ public class CharacterInventory : MonoBehaviour
 		_characterStats = GetComponent<CharacterStats>();
 
 		ItemUI.OnItemClicked += UseItem;
-		ItemUI.OnItemsSwitched += SwitchItems;
 	}
 
 	private void SwitchItems(int firstItemIndex, int secondItemIndex)
