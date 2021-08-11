@@ -12,5 +12,16 @@ public class ItemRecord : MonoBehaviour
 		_item = item;
 		currentStackValue = 1;
 	}
-	public ItemSO GetItem() => _item;
+
+	public ItemSO Item
+	{
+		get
+		{
+			return _item;
+		}
+		set
+		{
+			_item = value;
+		}
+	}
 }

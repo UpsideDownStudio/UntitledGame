@@ -76,7 +76,7 @@ public class CharacterMover : MonoBehaviour
 	    float velocityZ = Vector3.Dot(targetVector.normalized, transform.forward);
 	    float velocityX = Vector3.Dot(targetVector.normalized, transform.right);
 
-        if (Input.GetKey(KeyCode.LeftShift) && (velocityX > 0 && velocityZ > 0))
+        if (Input.GetKey(KeyCode.LeftShift))
 	    {
 		    speed = runMoveSpeed * Time.deltaTime;
         }

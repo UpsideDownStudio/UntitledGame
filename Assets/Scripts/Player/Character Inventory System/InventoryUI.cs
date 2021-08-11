@@ -7,13 +7,8 @@ public class InventoryUI : MonoBehaviour
 {
 	[SerializeField] private GameObject _itemUiPrefab;
 
-	public virtual void UpdateAllUI(List<ItemRecord> itemList)
+	public virtual void UpdateInventoryUI(List<ItemRecord> itemList)
 	{
-		for (int i = 0; i < transform.childCount; i++)
-		{
-			Destroy(transform.GetChild(i).gameObject);
-		}
-
 		for (int i = 0; i < itemList.Count; i++)
 		{
 			UpdateUIByNewItem(itemList[i], i);
@@ -30,10 +25,8 @@ public class InventoryUI : MonoBehaviour
 
 	protected void UpdateUIByNewItem(ItemRecord itemRecord, int index)
 	{
-		var item = Instantiate(_itemUiPrefab, transform);
-		Debug.Log(itemRecord.GetItem().Name);
-		var itemInfo = item.GetComponent<ItemUI>();
-		itemInfo.ConfigureItemUI(itemRecord, index);
+		var itemInfo = transform.GetChild(index).GetComponent<ItemUI>();
+		itemInfo.ConfigureItemUI(itemRecord ?? new ItemRecord(null), index);
 	}
 
 	protected void UpdateUIByExistItem(ItemRecord itemRecord, int index)

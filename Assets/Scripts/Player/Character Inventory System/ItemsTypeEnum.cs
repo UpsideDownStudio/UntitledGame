@@ -5,6 +5,7 @@ using UnityEngine;
 //Перечисление для всех типов предметов в игре.
 public enum TypeOfItems
 {
+	None,
 	Weapon,
 	Buffs
 }

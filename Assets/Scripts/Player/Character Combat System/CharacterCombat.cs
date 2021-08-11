@@ -40,8 +40,7 @@ public class CharacterCombat : MonoBehaviour, IDamage
 		//����������� ����� �������� � ������ Weapon.
 		if (Input.GetKeyDown(KeyCode.Mouse0) && ReadyToDealDamage())
 		{
-			Debug.Log("Player Fire");
-				Fire();
+			Fire();
 		}
     }
 

@@ -16,7 +16,7 @@ MonoBehaviour:
   _description: "\u042D\u0442\u043E \u043A\u043E\u043B\u0431\u0430 AttackSpeed, \u043F\u043E\u0432\u044B\u0448\u0430\u0435\u0442
     \u0441\u043A\u043E\u0440\u043E\u0441\u0442\u044C \u0430\u0442\u0430\u043A\u0438"
   _icon: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
-  _typeOfItem: 1
+  _typeOfItem: 2
   _isStackable: 0
   _maxStackableValue: 1
   _characterStatsType: 2

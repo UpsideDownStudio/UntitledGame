@@ -41,7 +41,7 @@ public class CharacterInventory : MonoBehaviour
 		var index = -1;
 		for (int i = 0; i < _itemSoList.Count; i++)
 		{
-			if (_itemSoList[i].GetItem() == newItem && _itemSoList[i].currentStackValue < newItem.MaxStackableValue)
+			if (_itemSoList[i].Item == newItem && _itemSoList[i].currentStackValue < newItem.MaxStackableValue)
 			{
 				index = i;
 				break;
@@ -75,7 +75,7 @@ public class CharacterInventory : MonoBehaviour
 	private void UseItem(int index)
 	{
 		_itemSoList[index].currentStackValue -= 1;
-		_characterStats.ModifyValue(_itemSoList[index].GetItem());
+		_characterStats.ModifyValue(_itemSoList[index].Item);
 
 		if (_itemSoList[index].currentStackValue == 0)
 		{
