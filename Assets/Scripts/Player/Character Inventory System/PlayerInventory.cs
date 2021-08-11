@@ -7,10 +7,11 @@ using UnityEngine;
 public class PlayerInventory : Inventory
 {
 	public const int UsableItemSlot = 4;
+	public const int WeaponItemSlot = 2;
 	public event Action<ItemRecord> WeaponItemSwitched;
 
-	[SerializeField] private List<ItemSO> _weaponItemList;
-	[SerializeField] private List<ItemSO> _consumableItemList;
+	[SerializeField] private List<ItemRecord> _weaponItemList;
+	[SerializeField] private List<ItemRecord> _consumableItemList;
 	[SerializeField] private CharacterStats _characterStats;
 	
 	protected override void Start()
@@ -29,16 +30,30 @@ public class PlayerInventory : Inventory
 	}
 
 	//Можно использовать только те предметы, что под типом Consumables(Buffs)
-	public override void ItemUse(int id)
+	public override void ItemUse(int id, bool isUsableSlot)
 	{
-		if (_itemList[id].Item.TypeOfItems == TypeOfItems.Buffs)
+		if (isUsableSlot)
+		{
+			_consumableItemList[id].currentStackValue -= 1;
+			_characterStats.ModifyValue(_consumableItemList[id].Item);
+
+			if (_consumableItemList[id].currentStackValue == 0)
+			{
+				DeleteItem(id, _consumableItemList, true);
+			}
+			else
+			{
+				((PlayerInventoryUI)_inventoryUi).UpdateUsableUI(_consumableItemList, TypeOfItems.Buffs);
+			}
+		}
+		else
 		{
 			_itemList[id].currentStackValue -= 1;
 			_characterStats.ModifyValue(_itemList[id].Item);
 
 			if (_itemList[id].currentStackValue == 0)
 			{
-				DeleteItem(id);
+				DeleteItem(id, _itemList);
 				_emptyInventorySlot = FindEmptyInventorySlot();
 			}
 			else
@@ -48,11 +63,17 @@ public class PlayerInventory : Inventory
 		}
 	}
 
-	private void DeleteItem(int id)
+	private void DeleteItem(int id, List<ItemRecord> itemList, bool isUsableSlot = false)
 	{
-		_itemList[id].Item = null;
+		itemList[id].Item = null;
 		_emptyInventorySlot = FindEmptyInventorySlot();
-		_inventoryUi.UpdateInventoryUI(_itemList);
+
+		if(!isUsableSlot)
+			_inventoryUi.UpdateInventoryUI(itemList);
+		else
+		{
+			((PlayerInventoryUI)_inventoryUi).UpdateUsableUI(itemList, TypeOfItems.Buffs);
+		}
 	}
 
 	public bool TryToAddItem(ItemSO newItem)
@@ -67,14 +88,12 @@ public class PlayerInventory : Inventory
 					break;
 				}
 			}
-		
 
-		if (index != -1)
+			if (index != -1)
 		{
 			if (_itemList[index].currentStackValue < newItem.MaxStackableValue)
 			{
 				_itemList[index].currentStackValue++;
-				Debug.Log("Был добавлен предмет + " + newItem.Name + " " + _itemList[index].currentStackValue);
 				_inventoryUi.UpdateUIByItem(_itemList[index], index);
 				return true;
 			}
@@ -88,13 +107,12 @@ public class PlayerInventory : Inventory
 			return true;
 		}
 
-		Debug.Log("False");
 		return false;
 	}
 
 	private void SwapUsable(int firstId, int secondId, bool firstIsUsableSlot, bool secondIsUsableSlot, TypeOfItems itemType)
 	{
-		List<ItemSO> itemList = null;
+		List<ItemRecord> itemList = null;
 
 		switch (itemType)
 		{
@@ -113,26 +131,42 @@ public class PlayerInventory : Inventory
 			itemList[secondId] = itemList[firstId];
 			itemList[firstId] = tmpItem;
 		}
-		else if (firstIsUsableSlot && _itemList[secondId].Item.TypeOfItems == itemType)
+		else if (firstIsUsableSlot && (_itemList[secondId].Item == null || _itemList[secondId].Item.TypeOfItems == itemType))
 		{
 			SwapUsable(firstId, secondId, itemList);
 		}
-		else if (secondIsUsableSlot && _itemList[firstId].Item.TypeOfItems == itemType)
+		else if (secondIsUsableSlot && (_itemList[firstId].Item == null || _itemList[firstId].Item.TypeOfItems == itemType))
 		{
+			Debug.Log("Второй");
+			Debug.Log(_itemList[firstId].currentStackValue + "Перед Swap");
 			SwapUsable(secondId, firstId, itemList);
 		}
 
 		((PlayerInventoryUI)_inventoryUi).UpdateUsableUI(itemList, itemType);
 	}
 
-	private void SwapUsable(int firstId, int secondId, List<ItemSO> itemList)
+	private void SwapUsable(int firstId, int secondId, List<ItemRecord> itemList)
 	{
 		var tmpItem = itemList[firstId];
-		itemList[firstId] = _itemList[secondId].Item;
-		var newItem = new ItemRecord(tmpItem);
-		_itemList[secondId] = newItem;
-		_inventoryUi.UpdateUIByItem(newItem, secondId);
+		itemList[firstId] = _itemList[secondId];
+		_itemList[secondId] = tmpItem;
+		_inventoryUi.UpdateUIByItem(tmpItem, secondId);
+	}
 
-		
+	protected override void InitializeInventory()
+	{
+		base.InitializeInventory();
+
+		for (int i = 0; i < WeaponItemSlot; i++)
+		{
+			var item = Instantiate(_itemRecord);
+			_weaponItemList.Add(item);
+		}
+
+		for (int i = 0; i < UsableItemSlot; i++)
+		{
+			var item = Instantiate(_itemRecord);
+			_consumableItemList.Add(item);
+		}
 	}
 }

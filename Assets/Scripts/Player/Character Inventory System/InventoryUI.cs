@@ -6,6 +6,8 @@ using UnityEngine.UI;
 public class InventoryUI : MonoBehaviour
 {
 	[SerializeField] private GameObject _itemUiPrefab;
+	[SerializeField] protected ItemRecord _itemRecord;
+	
 
 	public virtual void UpdateInventoryUI(List<ItemRecord> itemList)
 	{
@@ -26,7 +28,13 @@ public class InventoryUI : MonoBehaviour
 	protected void UpdateUIByNewItem(ItemRecord itemRecord, int index)
 	{
 		var itemInfo = transform.GetChild(index).GetComponent<ItemUI>();
-		itemInfo.ConfigureItemUI(itemRecord ?? new ItemRecord(null), index);
+		ItemRecord newItem = null;
+		if (itemRecord == null)
+		{
+			newItem = Instantiate(_itemRecord);
+			newItem.Item = null;
+		}
+		itemInfo.ConfigureItemUI(itemRecord ?? newItem, index);
 	}
 
 	protected void UpdateUIByExistItem(ItemRecord itemRecord, int index)

@@ -7,7 +7,7 @@ using UnityEngine.EventSystems;
 
 public class ItemUI : MonoBehaviour, IPointerClickHandler, IDragHandler, IBeginDragHandler, IEndDragHandler, IDropHandler
 {
-	public static event Action<int> OnItemClicked;
+	public static event Action<int, bool> OnItemClicked;
 	public static event Action<int, int> OnItemsSwitched;
 	public static event Action<int, int, bool, bool, TypeOfItems> OnUsableSwitched;
 
@@ -30,21 +30,23 @@ public class ItemUI : MonoBehaviour, IPointerClickHandler, IDragHandler, IBeginD
 		if (itemRecord.Item != null)
 		{
 			itemIndex = index;
-			_tmpCountText.text = itemRecord.currentStackValue.ToString();
+			if(!_isWeaponSlot)
+				_tmpCountText.text = itemRecord.currentStackValue.ToString();
 			_tmpNameText.text = itemRecord.Item.Name;
 		}
 		else
 		{
 			itemIndex = index;
-			_tmpCountText.text = "";
+			if (!_isWeaponSlot)
+				_tmpCountText.text = "";
 			_tmpNameText.text = "";
 		}
 	}
 
 	public void OnPointerClick(PointerEventData eventData)
 	{
-		if(!_isWeaponSlot && !_isConsumableSlot)
-			OnItemClicked?.Invoke(itemIndex);
+		if(!_isWeaponSlot)
+			OnItemClicked?.Invoke(itemIndex, _isConsumableSlot);
 	}
 
 	public void OnBeginDrag(PointerEventData eventData)
@@ -81,7 +83,5 @@ public class ItemUI : MonoBehaviour, IPointerClickHandler, IDragHandler, IBeginD
 		{
 			OnItemsSwitched?.Invoke(item.itemIndex, itemIndex);
 		}
-
-		Debug.Log("Droped " + item.itemIndex + "Current " + itemIndex);
 	}
 }

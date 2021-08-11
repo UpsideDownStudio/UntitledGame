@@ -12,7 +12,6 @@ public class CharacterInventoryUI : MonoBehaviour
 
 	private void Start()
 	{
-		//Нужно реворкать
 		_characterInventory.UpdateInventoryUIByNewItem += UpdateUIByNewItem;
 		_characterInventory.UpdateInventoryUIByExistItem += UpdateUIByExistItem;
 		_characterInventory.UpdateInventoryUIAll += UpdateUIByListOfItems;

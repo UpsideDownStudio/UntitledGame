@@ -72,7 +72,7 @@ public class CharacterInventory : MonoBehaviour
 		return false;
 	}
 
-	private void UseItem(int index)
+	private void UseItem(int index, bool isUsable)
 	{
 		_itemSoList[index].currentStackValue -= 1;
 		_characterStats.ModifyValue(_itemSoList[index].Item);

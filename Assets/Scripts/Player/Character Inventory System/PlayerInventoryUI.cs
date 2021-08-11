@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditorInternal;
 using UnityEngine;
 
 public class PlayerInventoryUI : InventoryUI
@@ -15,7 +16,7 @@ public class PlayerInventoryUI : InventoryUI
 		}
 	}
 
-	public void UpdateUsableUI(List<ItemSO> itemList, TypeOfItems itemType)
+	public void UpdateUsableUI(List<ItemRecord> itemList, TypeOfItems itemType)
 	{
 		switch (itemType)
 		{
@@ -29,12 +30,11 @@ public class PlayerInventoryUI : InventoryUI
 		}
 	}
 
-	private void UpdateUsableUI(List<GameObject> itemUiList, List<ItemSO> itemList)
+	private void UpdateUsableUI(List<GameObject> itemUiList, List<ItemRecord> itemList)
 	{
 		for (int i = 0; i < itemUiList.Count; i++)
 		{
-			var record = new ItemRecord(itemList[i]);
-			_weaponItemUI[i].GetComponent<ItemUI>().ConfigureItemUI(record, i);
+			itemUiList[i].GetComponent<ItemUI>().ConfigureItemUI(itemList[i], i);
 		}
 	}
 }
