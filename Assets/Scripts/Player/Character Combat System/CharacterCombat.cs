@@ -6,6 +6,7 @@ using UnityEngine;
 public class CharacterCombat : MonoBehaviour, IDamage
 {
 	private CharacterStats _characterStats;
+	private PlayerInventory _playerInventory;
 	private CharacterWeapon _characterWeapon;
 
 	[SerializeField] private Shot _shotPrefab;
@@ -18,7 +19,9 @@ public class CharacterCombat : MonoBehaviour, IDamage
 	{
 		_characterStats = GetComponent<CharacterStats>();
 		_characterWeapon = GetComponent<CharacterWeapon>();
+		_playerInventory = GetComponent<PlayerInventory>();
 		_characterWeapon.OnWeaponChangeEvent += ChangeWeapon;
+
 		_animator = GetComponent<Animator>();
 	}
 
@@ -34,17 +37,13 @@ public class CharacterCombat : MonoBehaviour, IDamage
 
 	void Update()
     {
-		//пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
-		//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ GetKeyDown
-		//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ GetKey
-		//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ Weapon.
 		if (Input.GetKeyDown(KeyCode.Mouse0) && ReadyToDealDamage())
 		{
 			Fire();
 		}
     }
-
-	//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅ пїЅ.пїЅ.
+	
+	//TODO: Надо пофиксить стрельбу при открытом инвентаре
     private void Fire()
     {
 	    Ray mouseRay = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -53,7 +52,7 @@ public class CharacterCombat : MonoBehaviour, IDamage
 	    {
 			_animator.SetTrigger("Shoot");
 		    _currentWeapon.Attack(hit);
-		    _nextFireTime = Time.time + _currentWeapon.attackSpeed * _characterStats.AttackSpeed;
+		    _nextFireTime = Time.time + _currentWeapon.WeaponItem.AttackSpeed * _characterStats.AttackSpeed;
 		}
     }
 

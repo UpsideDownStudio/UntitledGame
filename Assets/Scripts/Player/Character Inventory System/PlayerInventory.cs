@@ -8,7 +8,7 @@ public class PlayerInventory : Inventory
 {
 	public const int UsableItemSlot = 4;
 	public const int WeaponItemSlot = 2;
-	public event Action<ItemRecord> WeaponItemSwitched;
+	public event Action<List<ItemRecord>> OnWeaponItemSwitched;
 
 	[SerializeField] private List<ItemRecord> _weaponItemList;
 	[SerializeField] private List<ItemRecord> _consumableItemList;
@@ -65,8 +65,7 @@ public class PlayerInventory : Inventory
 
 	private void DeleteItem(int id, List<ItemRecord> itemList, bool isUsableSlot = false)
 	{
-		itemList[id].Item = null;
-		_emptyInventorySlot = FindEmptyInventorySlot();
+		base.ItemDelete(id);
 
 		if(!isUsableSlot)
 			_inventoryUi.UpdateInventoryUI(itemList);
@@ -137,11 +136,10 @@ public class PlayerInventory : Inventory
 		}
 		else if (secondIsUsableSlot && (_itemList[firstId].Item == null || _itemList[firstId].Item.TypeOfItems == itemType))
 		{
-			Debug.Log("Второй");
-			Debug.Log(_itemList[firstId].currentStackValue + "Перед Swap");
 			SwapUsable(secondId, firstId, itemList);
 		}
 
+		OnWeaponItemSwitched?.Invoke(_weaponItemList);
 		((PlayerInventoryUI)_inventoryUi).UpdateUsableUI(itemList, itemType);
 	}
 
@@ -150,6 +148,7 @@ public class PlayerInventory : Inventory
 		var tmpItem = itemList[firstId];
 		itemList[firstId] = _itemList[secondId];
 		_itemList[secondId] = tmpItem;
+		_emptyInventorySlot = FindEmptyInventorySlot();
 		_inventoryUi.UpdateUIByItem(tmpItem, secondId);
 	}
 

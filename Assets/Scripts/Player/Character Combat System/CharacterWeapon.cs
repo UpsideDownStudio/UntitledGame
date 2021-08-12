@@ -7,13 +7,31 @@ public class CharacterWeapon : MonoBehaviour
 {
 	public event Action<Weapon> OnWeaponChangeEvent;
 
+	[SerializeField] private Weapon _weaponPrefab;
+	
 	[SerializeField] private Weapon _defaultWeapon;
 	[SerializeField] private List<Weapon> _weaponsList;
-	[SerializeField] private Weapon currentWeapon;
+	[SerializeField] private Weapon _currentWeapon;
+
+	private PlayerInventory _playerInventory;
 
 	private void Start()
 	{
-		currentWeapon = _defaultWeapon;
+		_playerInventory = GetComponent<PlayerInventory>();
+
+		InitializeWeapon();
+
+		_playerInventory.OnWeaponItemSwitched += SwitchWeaponItem;
+		_currentWeapon = _defaultWeapon;
+	}
+
+	//¬озможность загрузки из сохранений.
+	private void InitializeWeapon()
+	{
+		for (int i = 0; i < PlayerInventory.WeaponItemSlot; i++)
+		{
+			_weaponsList.Add(Instantiate(_weaponPrefab));
+		}
 	}
 
 	private void Update()
@@ -23,26 +41,36 @@ public class CharacterWeapon : MonoBehaviour
 
 	public Weapon GetWeapon()
 	{
-		return currentWeapon;
+		return _currentWeapon;
+	}
+
+	private void SwitchWeaponItem(List<ItemRecord> weaponList)
+	{
+		for (int i = 0; i < PlayerInventory.WeaponItemSlot; i++)
+		{
+			if(weaponList[i].Item is WeaponSO)
+				_weaponsList[i].WeaponItem = (WeaponSO) weaponList[i].Item;
+			Debug.Log(_weaponsList[i].WeaponItem?.Name);
+		}
 	}
 
 	private void SwitchWeapon()
 	{
 		if (Input.GetKeyDown(KeyCode.Alpha1))
 		{
-			currentWeapon = _weaponsList[0];
+			SwapWeapon(0);
 		}
 		
 		if (Input.GetKeyDown(KeyCode.Alpha2))
 		{
-			currentWeapon = _weaponsList[1];
+			SwapWeapon(1);
 		}
-		
-		if (Input.GetKeyDown(KeyCode.Alpha3))
-		{
-			currentWeapon = _weaponsList[2];
-		}
+	}
 
-		OnWeaponChangeEvent?.Invoke(currentWeapon);
+	private void SwapWeapon(int id)
+	{
+		_currentWeapon = _weaponsList[id];
+		OnWeaponChangeEvent?.Invoke(_currentWeapon);
+		Debug.Log(_currentWeapon.WeaponItem.Name);
 	}
 }

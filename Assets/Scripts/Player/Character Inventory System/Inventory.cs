@@ -48,6 +48,7 @@ public abstract class Inventory : MonoBehaviour
 	protected virtual void ItemDelete(int id)
 	{
 		_itemList[id].Item = null;
+		_itemList[id].currentStackValue = 1;
 		_inventoryUi.UpdateInventoryUI(_itemList);
 	}
 
