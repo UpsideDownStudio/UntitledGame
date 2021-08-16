@@ -14,18 +14,15 @@ public class PlayerInventory : Inventory
 	[SerializeField] private List<ItemRecord> _consumableItemList;
 	[SerializeField] private CharacterStats _characterStats;
 	
-	protected override void Start()
+	protected override void Awake()
 	{
-		base.Start();
-		ItemUI.OnUsableSwitched += SwapUsable;
+		base.Awake();
 
 		_characterStats = GetComponent<CharacterStats>();
-		_inventoryUi = GameObject.FindGameObjectWithTag("PlayerInventory").GetComponent<PlayerInventoryUI>();
 
 		_inventoryUi.UpdateInventoryUI(_itemList);
 		((PlayerInventoryUI)_inventoryUi).UpdateUsableUI(_weaponItemList, TypeOfItems.Weapon);
 		((PlayerInventoryUI)_inventoryUi).UpdateUsableUI(_consumableItemList, TypeOfItems.Buffs);
-
 		_emptyInventorySlot = FindEmptyInventorySlot();
 	}
 
@@ -34,10 +31,10 @@ public class PlayerInventory : Inventory
 	{
 		if (isUsableSlot)
 		{
-			_consumableItemList[id].currentStackValue -= 1;
+			_consumableItemList[id].CurrentStackValue -= 1;
 			_characterStats.ModifyValue(_consumableItemList[id].Item);
 
-			if (_consumableItemList[id].currentStackValue == 0)
+			if (_consumableItemList[id].CurrentStackValue == 0)
 			{
 				DeleteItem(id, _consumableItemList, true);
 			}
@@ -48,10 +45,10 @@ public class PlayerInventory : Inventory
 		}
 		else
 		{
-			_itemList[id].currentStackValue -= 1;
+			_itemList[id].CurrentStackValue -= 1;
 			_characterStats.ModifyValue(_itemList[id].Item);
 
-			if (_itemList[id].currentStackValue == 0)
+			if (_itemList[id].CurrentStackValue == 0)
 			{
 				DeleteItem(id, _itemList);
 				_emptyInventorySlot = FindEmptyInventorySlot();
@@ -65,12 +62,15 @@ public class PlayerInventory : Inventory
 
 	private void DeleteItem(int id, List<ItemRecord> itemList, bool isUsableSlot = false)
 	{
-		base.ItemDelete(id);
-
-		if(!isUsableSlot)
+		if (!isUsableSlot)
+		{
+			base.ItemDelete(id);
 			_inventoryUi.UpdateInventoryUI(itemList);
+		}
 		else
 		{
+			itemList[id].Item = null;
+			itemList[id].CurrentStackValue = 1;
 			((PlayerInventoryUI)_inventoryUi).UpdateUsableUI(itemList, TypeOfItems.Buffs);
 		}
 	}
@@ -79,20 +79,20 @@ public class PlayerInventory : Inventory
 	{
 		var index = -1;
 		
-			for (int i = 0; i < _itemList.Count; i++)
-			{
-				if (_itemList[i].Item == newItem && _itemList[i].currentStackValue < newItem.MaxStackableValue)
-				{
-					index = i;
-					break;
-				}
-			}
-
-			if (index != -1)
+		for (int i = 0; i < _itemList.Count; i++)
 		{
-			if (_itemList[index].currentStackValue < newItem.MaxStackableValue)
+			if (_itemList[i].Item != null && (_itemList[i].Item.Name == newItem.Name && _itemList[i].CurrentStackValue < newItem.MaxStackableValue))
 			{
-				_itemList[index].currentStackValue++;
+				index = i;
+				break;
+			}
+		}
+
+		if (index != -1)
+		{
+			if (_itemList[index].CurrentStackValue < newItem.MaxStackableValue)
+			{
+				_itemList[index].CurrentStackValue++;
 				_inventoryUi.UpdateUIByItem(_itemList[index], index);
 				return true;
 			}
@@ -109,7 +109,7 @@ public class PlayerInventory : Inventory
 		return false;
 	}
 
-	private void SwapUsable(int firstId, int secondId, bool firstIsUsableSlot, bool secondIsUsableSlot, TypeOfItems itemType)
+	public void SwapUsable(int firstId, int secondId, bool firstIsUsableSlot, bool secondIsUsableSlot, TypeOfItems itemType)
 	{
 		List<ItemRecord> itemList = null;
 
@@ -130,42 +130,50 @@ public class PlayerInventory : Inventory
 			itemList[secondId] = itemList[firstId];
 			itemList[firstId] = tmpItem;
 		}
-		else if (firstIsUsableSlot && (_itemList[secondId].Item == null || _itemList[secondId].Item.TypeOfItems == itemType))
+		else if (firstIsUsableSlot && (_itemList[secondId] == null || _itemList[secondId].Item.TypeOfItems == itemType))
 		{
 			SwapUsable(firstId, secondId, itemList);
 		}
-		else if (secondIsUsableSlot && (_itemList[firstId].Item == null || _itemList[firstId].Item.TypeOfItems == itemType))
+		else if (secondIsUsableSlot && (_itemList[firstId] == null || _itemList[firstId].Item.TypeOfItems == itemType))
 		{
 			SwapUsable(secondId, firstId, itemList);
 		}
+		if(itemType == TypeOfItems.Weapon)
+			OnWeaponItemSwitched?.Invoke(_weaponItemList);
 
-		OnWeaponItemSwitched?.Invoke(_weaponItemList);
 		((PlayerInventoryUI)_inventoryUi).UpdateUsableUI(itemList, itemType);
 	}
 
 	private void SwapUsable(int firstId, int secondId, List<ItemRecord> itemList)
 	{
-		var tmpItem = itemList[firstId];
-		itemList[firstId] = _itemList[secondId];
-		_itemList[secondId] = tmpItem;
+		Debug.Log(itemList[firstId].Item?.Name);
+		Debug.Log(_itemList[secondId].Item?.Name);
+
+		SwapItem(firstId, secondId, itemList);
+
 		_emptyInventorySlot = FindEmptyInventorySlot();
-		_inventoryUi.UpdateUIByItem(tmpItem, secondId);
+		_inventoryUi.UpdateUIByItem(_itemList[secondId], secondId);
 	}
 
 	protected override void InitializeInventory()
 	{
 		base.InitializeInventory();
 
-		for (int i = 0; i < WeaponItemSlot; i++)
+		for (int i = 1; i < _inventoryItemParent.transform.childCount; i++)
 		{
-			var item = Instantiate(_itemRecord);
-			_weaponItemList.Add(item);
-		}
+			for (int j = 0; j < _inventoryItemParent.transform.GetChild(i).childCount; j++)
+			{
+				var itemRecord = GetItemRecordPlayerObject(i, j);
 
-		for (int i = 0; i < UsableItemSlot; i++)
-		{
-			var item = Instantiate(_itemRecord);
-			_consumableItemList.Add(item);
+				if (i == 1)
+				{
+					_weaponItemList.Add(itemRecord);
+				}
+				else
+				{
+					_consumableItemList.Add(itemRecord);
+				}
+			}
 		}
 	}
 }

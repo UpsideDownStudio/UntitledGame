@@ -22,22 +22,18 @@ public class ItemSO : ScriptableObject
 	{
 		get => _maxStackableValue;
 	}
-
 	public string Name
 	{
 		get => _name;
 	}
-
 	public string Description
 	{
 		get => _description;
 	}
-
 	public Sprite Icon
 	{
 		get => _icon;
 	}
-
 	public TypeOfItems TypeOfItems
 	{
 		get => _typeOfItem;

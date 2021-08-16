@@ -20,5 +20,6 @@ MonoBehaviour:
   _typeOfItem: 2
   _isStackable: 0
   _maxStackableValue: 2
+  _currentStackValue: -6
   _characterStatsType: 0
   _modifyValue: 100

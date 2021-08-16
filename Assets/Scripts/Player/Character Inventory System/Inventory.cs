@@ -8,17 +8,18 @@ public abstract class Inventory : MonoBehaviour
 	[SerializeField] protected int _maxInventorySize;
 	[SerializeField] protected int _emptyInventorySlot;
 
-	[SerializeField] private GameObject _inventoryUIObject;
+	[SerializeField] protected List<ItemRecord> _itemList;
 	[SerializeField] protected ItemRecord _itemRecord;
 
+	[SerializeField] protected GameObject _inventoryUIObject;
 	[SerializeField] protected InventoryUI _inventoryUi;
-	[SerializeField] protected List<ItemRecord> _itemList;
 
+	protected GameObject _inventoryItemParent;
 
-	protected virtual void Start()
+	protected virtual void Awake()
 	{
-		ItemUI.OnItemClicked += ItemUse;
-		ItemUI.OnItemsSwitched += ItemSwap;
+		_inventoryUi = _inventoryUIObject.transform.GetChild(0).GetComponent<InventoryUI>();
+		_inventoryUi.Inventory = this;
 
 		InitializeInventory();
 		_emptyInventorySlot = FindEmptyInventorySlot();
@@ -42,55 +43,76 @@ public abstract class Inventory : MonoBehaviour
 
 	public virtual void ItemUse(int id, bool isUsableSlot)
 	{
-
+		Debug.Log("ItemUSE");
 	}
 
 	protected virtual void ItemDelete(int id)
 	{
 		_itemList[id].Item = null;
-		_itemList[id].currentStackValue = 1;
+		_itemList[id].CurrentStackValue = 1;
 		_inventoryUi.UpdateInventoryUI(_itemList);
 	}
 
-	protected virtual void ItemSwap(int firstId, int secondId)
+	public virtual void ItemSwap(int firstId, int secondId)
 	{
+		Debug.Log(firstId);
+		Debug.Log(secondId);
+
 		if (firstId != secondId)
 		{
-			if (_itemList[firstId].Item == _itemList[secondId].Item)
+			if ((_itemList[firstId].Item == _itemList[secondId].Item) && (_itemList[firstId].Item != null && _itemList[secondId].Item != null))
 			{
-				if (_itemList[secondId].currentStackValue < _itemList[secondId].Item.MaxStackableValue)
+				Debug.Log("Зашёл 1");
+				if (_itemList[secondId].CurrentStackValue < _itemList[secondId].Item.MaxStackableValue)
 				{
-					int value = _itemList[firstId].currentStackValue + _itemList[secondId].currentStackValue -
+					Debug.Log("Зашёл 2");
+					int value = _itemList[firstId].CurrentStackValue + _itemList[secondId].CurrentStackValue -
 					            _itemList[firstId].Item.MaxStackableValue;
 
 					if (value <= 0)
 					{
 						ItemDelete(secondId);
-						_itemList[firstId].currentStackValue = value + _itemList[firstId].Item.MaxStackableValue;
+						_itemList[firstId].CurrentStackValue = value + _itemList[firstId].Item.MaxStackableValue;
 					}
 					else
 					{
-						_itemList[secondId].currentStackValue = value;
-						_itemList[firstId].currentStackValue = _itemList[firstId].Item.MaxStackableValue;
+						_itemList[secondId].CurrentStackValue = value;
+						_itemList[firstId].CurrentStackValue = _itemList[firstId].Item.MaxStackableValue;
 					}
 				}
 			}
-
-			var tmpItem = _itemList[firstId];
-			_itemList[firstId] = _itemList[secondId];
-			_itemList[secondId] = tmpItem;
+			
+			SwapItem(firstId, secondId, _itemList);
 
 			_inventoryUi.UpdateInventoryUI(_itemList);
 			_emptyInventorySlot = FindEmptyInventorySlot();
 		}
 	}
+	protected void SwapItem(int firstId, int secondId, List<ItemRecord> itemList)
+	{
+		var tmpItem = itemList[firstId].Item;
+		var tmpItemCount = itemList[firstId].CurrentStackValue;
+
+		itemList[firstId].Item = _itemList[secondId].Item;
+		itemList[firstId].CurrentStackValue = _itemList[secondId].CurrentStackValue;
+
+		_itemList[secondId].Item = tmpItem;
+		_itemList[secondId].CurrentStackValue = tmpItemCount;
+	}
 
 	protected virtual void InitializeInventory()
 	{
+		_inventoryItemParent = transform.GetChild(0).gameObject;
+
 		for (int i = 0; i < _maxInventorySize; i++)
 		{
-			var item = Instantiate(_itemRecord);
-			_itemList.Add(item);
+			var itemRecord = GetItemRecordPlayerObject(0, i);
+			_itemList.Add(itemRecord);
 		}
+	}
+
+	protected ItemRecord GetItemRecordPlayerObject(int firstChild, int secondChild)
+	{
+		return _inventoryItemParent.transform.GetChild(firstChild).GetChild(secondChild).GetComponent<ItemRecord>();
 	}
 }

@@ -2,18 +2,23 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEditorInternal;
 using UnityEngine;
+using UnityEngine.PlayerLoop;
 
 public class PlayerInventoryUI : InventoryUI
 {
-	[SerializeField] private List<GameObject> _weaponItemUI;
-	[SerializeField] private List<GameObject> _consumableItemUI;
+	[SerializeField] private List<ItemUI> _weaponItemUI;
+	[SerializeField] private List<ItemUI> _consumableItemUI;
 
-	public override void UpdateInventoryUI(List<ItemRecord> itemList)
+	protected override void Start()
 	{
-		for (int i = 0; i < itemList.Count; i++)
-		{
-			UpdateUIByNewItem(itemList[i], i);
-		}
+		Debug.Log("ֲûחמג Player");
+		base.Start();
+
+		UpdateUsableUI(_weaponItemUI, null);
+		UpdateUsableUI(_consumableItemUI, null);
+
+		SubscribeItemsUI(_weaponItemUI);
+		SubscribeItemsUI(_consumableItemUI);
 	}
 
 	public void UpdateUsableUI(List<ItemRecord> itemList, TypeOfItems itemType)
@@ -30,11 +35,48 @@ public class PlayerInventoryUI : InventoryUI
 		}
 	}
 
-	private void UpdateUsableUI(List<GameObject> itemUiList, List<ItemRecord> itemList)
+	private void UpdateUsableUI(List<ItemUI> itemUiList, List<ItemRecord> itemList)
 	{
 		for (int i = 0; i < itemUiList.Count; i++)
 		{
-			itemUiList[i].GetComponent<ItemUI>().ConfigureItemUI(itemList[i], i);
+			itemUiList[i].ConfigureItemUI(itemList != null ? itemList[i] : null, i);
+		}
+	}
+
+	protected override void GetItemsUI()
+	{
+		base.GetItemsUI();
+
+		var inventoryParent = transform.parent;
+		for (int i = 1; i < inventoryParent.childCount; i++)
+		{
+			for (int j = 0; j < inventoryParent.GetChild(i).childCount; j++)
+			{
+				if (i == 1)
+				{
+					_weaponItemUI.Add(inventoryParent.GetChild(i).GetChild(j).GetComponent<ItemUI>());
+				}
+				else
+				{
+					_consumableItemUI.Add(inventoryParent.GetChild(i).GetChild(j).GetComponent<ItemUI>());
+				}
+			}
+		}
+
+		if (_weaponItemUI.Count == 0 || _consumableItemUI.Count == 0)
+			return;
+	}
+
+	protected override void SubscribeItemsUI(List<ItemUI> listUi)
+	{
+		base.SubscribeItemsUI(listUi);
+
+		if (listUi != null || listUi.Count > 0)
+		{
+			for (int i = 0; i < listUi.Count; i++)
+			{
+				listUi[i].OnUsableSwitched += ((PlayerInventory) _inventory).SwapUsable;
+			}
 		}
 	}
 }

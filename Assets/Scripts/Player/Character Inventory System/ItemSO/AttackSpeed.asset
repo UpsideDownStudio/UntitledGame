@@ -19,5 +19,6 @@ MonoBehaviour:
   _typeOfItem: 2
   _isStackable: 0
   _maxStackableValue: 1
+  _currentStackValue: -1
   _characterStatsType: 2
   _modifyValue: 0.5

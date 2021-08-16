@@ -7,9 +7,9 @@ using UnityEngine.EventSystems;
 
 public class ItemUI : MonoBehaviour, IPointerClickHandler, IDragHandler, IBeginDragHandler, IEndDragHandler, IDropHandler
 {
-	public static event Action<int, bool> OnItemClicked;
-	public static event Action<int, int> OnItemsSwitched;
-	public static event Action<int, int, bool, bool, TypeOfItems> OnUsableSwitched;
+	public event Action<int, bool> OnItemClicked;
+	public event Action<int, int> OnItemsSwitched;
+	public event Action<int, int, bool, bool, TypeOfItems> OnUsableSwitched;
 
 	[SerializeField] private bool _isWeaponSlot;
 	[SerializeField] private bool _isConsumableSlot;
@@ -27,11 +27,11 @@ public class ItemUI : MonoBehaviour, IPointerClickHandler, IDragHandler, IBeginD
 
 	public void ConfigureItemUI(ItemRecord itemRecord, int index)
 	{
-		if (itemRecord.Item != null)
+		if (itemRecord != null && itemRecord.Item != null)
 		{
 			itemIndex = index;
 			if(!_isWeaponSlot)
-				_tmpCountText.text = itemRecord.currentStackValue.ToString();
+				_tmpCountText.text = itemRecord.CurrentStackValue.ToString();
 			_tmpNameText.text = itemRecord.Item.Name;
 		}
 		else
@@ -45,8 +45,10 @@ public class ItemUI : MonoBehaviour, IPointerClickHandler, IDragHandler, IBeginD
 
 	public void OnPointerClick(PointerEventData eventData)
 	{
-		if(!_isWeaponSlot)
+		if (!_isWeaponSlot)
+		{
 			OnItemClicked?.Invoke(itemIndex, _isConsumableSlot);
+		}
 	}
 
 	public void OnBeginDrag(PointerEventData eventData)
@@ -81,7 +83,17 @@ public class ItemUI : MonoBehaviour, IPointerClickHandler, IDragHandler, IBeginD
 		}
 		else
 		{
-			OnItemsSwitched?.Invoke(item.itemIndex, itemIndex);
+			Debug.Log("ItemSwitched");
+
+			if (OnItemsSwitched != null)
+			{
+				Debug.Log("Âûחמג סגטעקא");
+				OnItemsSwitched(item.itemIndex, itemIndex);
+			}
+			else
+			{
+				Debug.Log("Íוע גûחמגא");
+			}
 		}
 	}
 }
